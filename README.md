@@ -9,6 +9,7 @@ Levantar el contenedor de la base de datos.
 
 # Comandos para prisma
 ```
+npx prisma generate
 npx prisma migrate dev --name nombre_migración
 npx prisma db pull
 

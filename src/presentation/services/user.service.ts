@@ -25,11 +25,10 @@ export class UserService {
       // Envíar correo de verificación.
       await this.sendEmailValidationLink(user.email);
       const { password, ...rest } = UserEntity.fromObject(user);
-
       const token = await JwtAdapter.generateToken({ user_id: user.id, email: user.email });
       if(!token) throw CustomError.internalServer('Error while creating JWT');
       return {
-        account: rest,
+        user: rest,
         token: token
       };
     } catch (error) {

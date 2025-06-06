@@ -16,8 +16,10 @@ export class PrismaUserRepository implements UserRepository {
   async create(userRegisterDto: UserRegisterDto):Promise<User | null> {
     const createAccount = await this.prisma.user.create({
       data: {
+        username: userRegisterDto.username,
         email: userRegisterDto.email,
         password: userRegisterDto.password,
+        notifications: userRegisterDto.notifications,
         created_at: new Date(userRegisterDto.created_at)
       },
     });

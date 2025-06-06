@@ -8,9 +8,84 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
+  id              String            @id @default(uuid())
+  email           String            @unique
   password        String
-  email_validated Boolean  @default(false)
-  created_at      DateTime @default(now())
+  email_validated Boolean           @default(false)
+  created_at      DateTime          @default(now())
+  notifications   Boolean           @default(false)
+  perfil_image    String?
+  username        String
+  challenges      Challenge[]
+  emotionRecords  EmotionRecord[]
+  progressTracker ProgressTracker[]
+  usageRecord     UsageRecord[]
+}
+
+model EmotionRecord {
+  id         String   @id @default(uuid())
+  user_id    String
+  emotion    String
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model UsageRecord {
+  id      Int      @id @default(autoincrement())
+  user_id String
+  date    DateTime
+  user    User     @relation(fields: [user_id], references: [id])
+}
+
+model ProgressTracker {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  type       String
+  counter    Int      @default(0)
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model Challenge {
+  id          Int      @id @default(autoincrement())
+  user_id     String
+  tittle      String
+  description String?
+  created_at  DateTime @default(now())
+  is_active   Boolean  @default(true)
+  completed   Boolean  @default(false)
+  user        User     @relation(fields: [user_id], references: [id])
+}
+
+model DailyTip {
+  id             Int      @id @default(autoincrement())
+  emotion        String
+  image_dailyTip String?
+  tip            String
+  active         Boolean  @default(true)
+  date           DateTime @default(now())
+}
+
+model Activity {
+  id          Int      @id @default(autoincrement())
+  emotion     String[]
+  title       String
+  type        String
+  url         String?
+  description String?
+}
+
+model FoodSuggestion {
+  id          Int    @id @default(autoincrement())
+  emotion     String
+  type        String
+  name        String
+  description String
+}
+
+model DrinkSuggestion {
+  id          Int     @id @default(autoincrement())
+  type        String
+  name        String
+  description String?
 }
