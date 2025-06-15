@@ -21,4 +21,12 @@ export class EmotionController {
       .then((emotion) => res.json(emotion))
       .catch(error => this.handleError(error, res));
   };
+
+  public getLastStatistics = (req:Request, res:Response) => {
+    const user_id = req.body.user.id;
+    
+    this.emotionService.getRegistersById(user_id)
+      .then((report) => res.json(report))
+      .catch(error => this.handleError(error, res));
+  }
 }

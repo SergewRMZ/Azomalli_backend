@@ -2,6 +2,9 @@ import { CustomError, EmotionRecordDto } from "../../domain";
 import { PrismaEmotionRepository } from "../../domain/repository/PrismaEmotionRepository";
 import { UserInputDto } from "../../domain/dtos/emotion/UserInputDto";
 import axios from "axios";
+import dayjs from "dayjs";
+import { group } from "console";
+
 
 export class EmotionService {
   constructor(private readonly prismaEmotionRepository: PrismaEmotionRepository) {}
@@ -39,4 +42,44 @@ export class EmotionService {
       }
     }
   }
+
+  public async getRegistersById(user_id: string) {
+    const emotions = await this.prismaEmotionRepository.getLast7Days(user_id);
+    
+    const grouped: Record<string, Record<string, number>> = {};
+
+    emotions.forEach(record => {
+      const date = dayjs(record.created_at).format('YYYY-MM-DD');
+      const emotion = record.emotion;
+
+      if (!grouped[date]) grouped[date] = {};
+      if (!grouped[date][emotion]) grouped[date][emotion] = 0;
+
+      grouped[date][emotion]++;
+    });
+
+    const today = dayjs();
+    const report = [];
+
+    for(let i = 6; i >= 0; i--) {
+      const date = today.subtract(i, 'day').format('YYYY-MM-DD');
+      const emotionData = grouped[date] || {};
+      const total = Object.values(emotionData).reduce((sum, count) => sum + count, 0);
+
+      let dominantEmotion = 'none';
+      if(total > 0) {
+        dominantEmotion = Object.entries(emotionData).sort((a, b) => b[1] - a[1])[0][0];
+      }
+
+      report.push({
+        date,
+        dominantEmotion,
+        emotionCount: emotionData,
+        total
+      });
+    }
+
+    return report;
+  }
+
 }
