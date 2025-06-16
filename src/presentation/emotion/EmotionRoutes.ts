@@ -8,7 +8,7 @@ export class EmotionRoutes {
   static get routes(): Router {
     const router = Router();
     const prismaEmotionRepository = new PrismaEmotionRepository();
-
+    
     const emotionService = new EmotionService(prismaEmotionRepository);
     const emotionController = new EmotionController(emotionService);
     router.post('/analyzer', emotionController.analyzerEmotion);

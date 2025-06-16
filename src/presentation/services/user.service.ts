@@ -1,14 +1,16 @@
 import { bcrypAdapter, envs, JwtAdapter, regularExps } from '../../config';
-import { CustomError } from '../../domain';
-import { UserLoginDto } from '../../domain/dtos/auth/UserLoginDto';
-import { UserRegisterDto } from '../../domain/dtos/auth/UserRegisterDto';
-import { UserEntity } from '../../domain/entities/UserEntity';
-import { PrismaUserRepository } from '../../domain/repository/PrismaUserRepository';
+import { AdminRegisterDto, CustomError, PrismaActivityRepository } from '../../domain';
+import { UserLoginDto } from '../../domain/dtos/auth';
+import { UserRegisterDto } from '../../domain/dtos/auth';
+import { UserEntity } from '../../domain';
+import { PrismaAdminRepository } from '../../domain';
+import { PrismaUserRepository } from '../../domain';
 import { EmailService } from './email.service';
 
 export class UserService {
   constructor(
     private readonly prismaUserRepository: PrismaUserRepository,
+    private readonly prismaAdminRepository: PrismaAdminRepository,
     private readonly emailService: EmailService
   ) {}
 
@@ -25,8 +27,33 @@ export class UserService {
       // Envíar correo de verificación.
       await this.sendEmailValidationLink(user.email);
       const { password, ...rest } = UserEntity.fromObject(user);
-      const token = await JwtAdapter.generateToken({ user_id: user.id, email: user.email });
+      const token = await JwtAdapter.generateToken({ user_id: user.id, email: user.email, role: user.role });
       if(!token) throw CustomError.internalServer('Error while creating JWT');
+      return {
+        user: rest,
+        token: token
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async registerAdmin(adminRegisterDto: AdminRegisterDto) {
+    const existAdmin = await this.prismaAdminRepository.findByEmail(adminRegisterDto.email);
+    if(existAdmin) throw CustomError.badRequest('El correo electrónico ya está registrado');
+
+    try {
+      adminRegisterDto.password = bcrypAdapter.hash(adminRegisterDto.password);
+      const admin = await this.prismaAdminRepository.create(adminRegisterDto);
+
+      if(admin == null) throw CustomError.internalServer('Internal server error');
+
+      await this.sendEmailValidationLink(admin.email);
+      const { password, ...rest } = admin;
+      const token = await JwtAdapter.generateToken({ user_id: admin.id, email: admin.email, role: admin.role });
+
+      if(!token) throw CustomError.internalServer('Error while creating token JWT');
+      
       return {
         user: rest,
         token: token

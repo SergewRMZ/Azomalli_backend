@@ -1,2 +1,3 @@
-export * from './UserLoginDto';
-export * from './UserRegisterDto';
+export { UserLoginDto } from './UserLoginDto';
+export { UserRegisterDto } from './UserRegisterDto';
+export { AdminRegisterDto } from './AdminRegisterDto';

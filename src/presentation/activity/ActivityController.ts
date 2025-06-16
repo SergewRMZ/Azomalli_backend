@@ -19,7 +19,7 @@ export class ActivityController {
 
     this.activityService.registerActivity(createActivityDto!)
       .then((activity) => res.json(activity))
-      .catch((error) => this.handleError(res, error));
+      .catch((error) => this.handleError(error, res));
   }
 
   public getActivities = (req: Request, res: Response) => {

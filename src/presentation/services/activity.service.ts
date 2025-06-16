@@ -27,12 +27,12 @@ export class ActivityService {
     const total = await this.prismaActivityRepository.countAllActivites();
 
     return {
-      activites,
       page: page,
       pageSize: pageSize,
       total: total,
       next: `/api/activity?page=${page + 1}&pageSize=${pageSize}`,
-      previous: (page - 1) > 0 ? `/api/activity?page=${page - 1}&pageSize=${pageSize}` : null
+      previous: (page - 1) > 0 ? `/api/activity?page=${page - 1}&pageSize=${pageSize}` : null,
+      activites
     }
   }
 }
