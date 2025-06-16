@@ -32,4 +32,16 @@ export class PrismaActivityRepository implements ActivityRepository {
       return null;
     }
   }
+
+  async findAllActivitiesPaginated(skip: number, pageSize: number) {
+    return await this.prisma.activity.findMany({
+      take: pageSize,
+      skip
+    });
+  }
+
+  async countAllActivites(): Promise<number> {
+    const count = await this.prisma.activity.count();
+    return count;
+  }
 }

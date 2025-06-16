@@ -11,7 +11,8 @@ export class ActivityRoutes {
 
     const activityService = new ActivityService(prismaActivityRepository);
     const activityController = new ActivityController(activityService);
-    router.post('/create', activityController.createActivity);
+    router.post('/create', [ AuthMiddleware.validateJWT ],activityController.createActivity);
+    router.get('/', activityController.getActivities);
     return router;
   }
 }

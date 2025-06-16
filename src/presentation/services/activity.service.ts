@@ -1,4 +1,4 @@
-import { CustomError } from "../../domain";
+import { CustomError, PaginationDto } from "../../domain";
 import { CreateActivityDTO } from "../../domain";
 import { PrismaActivityRepository } from "../../domain";
 
@@ -19,4 +19,20 @@ export class ActivityService {
     }
   }
 
+  public async getActivities (paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const skip = (page - 1) * pageSize;
+
+    const activites = await this.prismaActivityRepository.findAllActivitiesPaginated(skip, pageSize);
+    const total = await this.prismaActivityRepository.countAllActivites();
+
+    return {
+      activites,
+      page: page,
+      pageSize: pageSize,
+      total: total,
+      next: `/api/activity?page=${page + 1}&pageSize=${pageSize}`,
+      previous: (page - 1) > 0 ? `/api/activity?page=${page - 1}&pageSize=${pageSize}` : null
+    }
+  }
 }

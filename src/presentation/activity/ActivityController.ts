@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CustomError } from '../../domain';
+import { CustomError, PaginationDto } from '../../domain';
 import { ActivityService } from '../services/activity.service';
 import { CreateActivityDTO } from '../../domain';
 
@@ -23,6 +23,13 @@ export class ActivityController {
   }
 
   public getActivities = (req: Request, res: Response) => {
-    
+    const { page = 1, pageSize = 10 } = req.query;
+    const [error, paginationDto] = PaginationDto.create(+page, +pageSize);
+
+    if( error ) res.status(400).json({error});
+
+    this.activityService.getActivities(paginationDto!)
+      .then( activites => res.json(activites))
+      .catch( error => this.handleError(error, res));
   }
 }
