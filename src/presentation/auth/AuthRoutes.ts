@@ -5,12 +5,15 @@ import { PrismaUserRepository } from '../../domain/repository/PrismaUserReposito
 import { EmailService } from '../services/email.service';
 import { envs } from '../../config';
 import { PrismaAdminRepository } from '../../domain';
+import { AuthMiddleware } from '../middleware/auth.middleware';
+import { PrismaSurveyRepository } from '../../domain/repository/PrismaSurveyRepository';
 
 export class AuthRoutes {
   static get routes(): Router {
     const router = Router();
     const prismaUserRepository = new PrismaUserRepository();
     const prismaAdminRepository = new PrismaAdminRepository();
+    const prismaSurveyRepository = new PrismaSurveyRepository();
 
     const emailService = new EmailService(
       envs.MAILER_SERVICE,
@@ -19,10 +22,11 @@ export class AuthRoutes {
       envs.SEND_EMAIL,
     );
 
-    const accountService = new UserService(prismaUserRepository, prismaAdminRepository, emailService);
+    const accountService = new UserService(prismaUserRepository, prismaAdminRepository, emailService, prismaSurveyRepository);
     const authController = new AuthController(accountService);
     router.post('/register', authController.registerUser);
-    router.post('/registerAdmin', authController.registerAdmin);
+    router.post('/register-survey', [AuthMiddleware.validateJWT], authController.createSurvey);
+    router.post('/register-admin', authController.registerAdmin);
     router.post('/login', authController.loginUser);
     router.post('/login-admin', authController.loginAdmin);
     router.post('/validate-email/:token', authController.validateEmail);

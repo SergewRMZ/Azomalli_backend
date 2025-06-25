@@ -6,12 +6,18 @@ import { UserEntity } from '../../domain';
 import { PrismaAdminRepository } from '../../domain';
 import { PrismaUserRepository } from '../../domain';
 import { EmailService } from './email.service';
+import { questions, Uuid } from '../../config/uuid.adapter';
+import path from 'path';
+import fs from 'fs';
+import { PrismaSurveyRepository } from '../../domain/repository/PrismaSurveyRepository';
+import { decryptData, deriveKey, encryptData } from '../../config/crypto';
 
 export class UserService {
   constructor(
     private readonly prismaUserRepository: PrismaUserRepository,
     private readonly prismaAdminRepository: PrismaAdminRepository,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly prismaSurveyRepository: PrismaSurveyRepository
   ) {}
 
   public async registerUser(userRegisterDto: UserRegisterDto) {
@@ -137,4 +143,40 @@ export class UserService {
     await this.prismaUserRepository.updateEmailValidate(email, { email_validated: true });    
     return true;
   } 
+
+  public saveSurvey = async (userId: string, answers: string[], password: string) => {
+    const user = await this.prismaUserRepository.findById(userId);
+    if(!user) throw CustomError.badRequest('El usuario no existe en la base de datos');
+
+    
+    const isMatch = bcrypAdapter.compare(password, user.password);
+    if(!isMatch) throw CustomError.badRequest('Contraseña incorrecta');
+
+    const surveyReference = Uuid.v4();
+
+    const fileName = `${surveyReference}.json`;  
+    const filePath = path.join(__dirname, '../../../surveys', fileName); 
+
+    const directoryPath = path.dirname(filePath);
+    if (!fs.existsSync(directoryPath)) {
+      fs.mkdirSync(directoryPath, { recursive: true }); 
+    }
+
+    const survey = questions.map((question, index) => {
+      return {
+        question,
+        answer: answers[index]
+      };
+    });
+
+    const encryptedSurvey = await encryptData(password, JSON.stringify(survey));  // Datos cifrados
+    
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(encryptedSurvey, null, 2));
+      // const survey = await this.prismaSurveyRepository.create(userId, surveyReference);
+      return encryptedSurvey;
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
 }
