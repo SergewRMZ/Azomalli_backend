@@ -20,6 +20,9 @@ model Admin {
   email_validated Boolean           @default(false)
   created_at      DateTime          @default(now())
   role            role              @default(admin)
+
+  activities      Activity[]        @relation("AdminActivities")
+  dailyTips       DailyTip[]        @relation("AdminDailyTips")
 }
 
 model User {
@@ -69,7 +72,6 @@ model Challenge {
   tittle      String
   description String?
   created_at  DateTime @default(now())
-  is_active   Boolean  @default(true)
   completed   Boolean  @default(false)
   user        User     @relation(fields: [user_id], references: [id])
 }
@@ -81,6 +83,8 @@ model DailyTip {
   tip            String
   active         Boolean  @default(true)
   date           DateTime @default(now())
+  admin_id       String
+  admin          Admin @relation("AdminDailyTips", fields: [admin_id], references: [id])
 }
 
 model Activity {
@@ -89,19 +93,6 @@ model Activity {
   title       String
   url         String?
   description String?
-}
-
-model FoodSuggestion {
-  id          Int    @id @default(autoincrement())
-  emotion     String
-  type        String
-  name        String
-  description String
-}
-
-model DrinkSuggestion {
-  id          Int     @id @default(autoincrement())
-  type        String
-  name        String
-  description String?
+  admin_id String 
+  admin Admin @relation("AdminActivities", fields: [admin_id], references: [id])
 }

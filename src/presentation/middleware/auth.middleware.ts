@@ -26,7 +26,8 @@ export class AuthMiddleware {
       if(role === 'admin') {
         const admin = await prismaAdminRepository.findByEmail(email);
         if(!admin) return res.status(401).json({ error: 'Token inválido', message: 'Usuario no encontrado'});
-        req.body.user = admin;
+        const { password, ...adminEntity } = admin;
+        req.body.user = adminEntity;
       }
 
       else {

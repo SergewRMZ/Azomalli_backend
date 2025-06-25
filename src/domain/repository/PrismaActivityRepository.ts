@@ -5,10 +5,11 @@ import { CreateActivityDTO } from "../dtos/activity";
 export class PrismaActivityRepository implements ActivityRepository {
   private prisma = new PrismaClient();
 
-  async create(createActivityDto: CreateActivityDTO): Promise<Activity | null> {
+  async create(createActivityDto: CreateActivityDTO, admin_id: string): Promise<Activity | null> {
     try {
       const activity = await this.prisma.activity.create({
         data: {
+          admin_id,
           emotions: createActivityDto.emotions,
           title: createActivityDto.title,
           url: createActivityDto.url,

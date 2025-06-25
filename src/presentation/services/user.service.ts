@@ -63,13 +63,33 @@ export class UserService {
     }
   }
 
+  public async loginAdmin(userLoginDto: UserLoginDto) {
+    try {
+      const existAdmin = await this.prismaAdminRepository.findByEmail(userLoginDto.email);
+      if(!existAdmin) throw CustomError.badRequest('The email does not exist');
+      const isMatch = bcrypAdapter.compare(userLoginDto.password, existAdmin.password);
+      if(!isMatch) throw CustomError.badRequest('Incorrect Password');
+      const { password, ...admin } = existAdmin;
+
+      const token = await JwtAdapter.generateToken({ user_id: admin.id, email: admin.email, role: admin.role });
+      if(!token) throw CustomError.internalServer('Error while creating token JWT');
+
+      return {
+        account: admin,
+        token
+      };
+    } catch (error) {
+      
+    }
+  }
+
   public async loginUser(userLoginDto: UserLoginDto) {
     try {
       const existUser = await this.prismaUserRepository.findByEmail(userLoginDto.email);
       if(!existUser) throw CustomError.badRequest('The email does not exist');
       const isMatch = bcrypAdapter.compare(userLoginDto.password, existUser.password);
 
-      if(!isMatch) throw CustomError.badRequest('Password Incorrect');
+      if(!isMatch) throw CustomError.badRequest('Incorrect Password');
       const { password, ...user } = UserEntity.fromObject(existUser); 
 
       const token = await JwtAdapter.generateToken({ user_id: existUser.id, email: existUser.email });

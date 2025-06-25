@@ -14,10 +14,11 @@ export class ActivityController {
   } 
 
   public createActivity = (req: Request, res:Response) => {
+    const adminId = req.body.user.id;
     const [error, createActivityDto] = CreateActivityDTO.create(req.body);
     if(error) return res.status(400).json({error});
-
-    this.activityService.registerActivity(createActivityDto!)
+    console.log(adminId);
+    this.activityService.registerActivity(createActivityDto!, adminId)
       .then((activity) => res.json(activity))
       .catch((error) => this.handleError(error, res));
   }

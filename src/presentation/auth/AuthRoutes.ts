@@ -24,6 +24,7 @@ export class AuthRoutes {
     router.post('/register', authController.registerUser);
     router.post('/registerAdmin', authController.registerAdmin);
     router.post('/login', authController.loginUser);
+    router.post('/login-admin', authController.loginAdmin);
     router.post('/validate-email/:token', authController.validateEmail);
     return router;
   }

@@ -32,6 +32,14 @@ export class AuthController {
       .catch(error => this.handleError(error, res));
   };
 
+  public loginAdmin = (req: Request, res: Response) => {
+    const [error, userLoginDto] = UserLoginDto.create(req.body);
+    if(error) return res.status(400).json({ error })
+    this.userService.loginAdmin(userLoginDto!)
+      .then((user) => res.json(user))
+      .catch(error => this.handleError(error, res));
+  }
+
   public loginUser = (req:Request, res:Response) => {
     const [error, userLoginDto] = UserLoginDto.create(req.body);
     if(error) return res.status(400).json({ error });

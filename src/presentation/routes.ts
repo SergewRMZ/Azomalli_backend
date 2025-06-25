@@ -4,6 +4,7 @@ import { FileUploadRoutes } from "./file-upload/FileRoutes";
 import { ImageRoutes } from "./images/ImageRoutes";
 import { EmotionRoutes } from "./emotion/EmotionRoutes";
 import { ActivityRoutes } from "./activity/ActivityRoutes";
+import { ChallengeRoutes } from "./challenge/ChallengeRoutes";
 
 export class AppRoutes {
   static get routes(): Router {
@@ -13,6 +14,7 @@ export class AppRoutes {
     router.use('/api/images', ImageRoutes.routes);
     router.use('/api/upload', FileUploadRoutes.routes);
     router.use('/api/activity', ActivityRoutes.routes);
+    router.use('/api/challenge', ChallengeRoutes.routes);
     return router;
   }
 }
