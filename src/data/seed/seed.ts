@@ -2,7 +2,12 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const EMOTIONS = ["joy", "sadness", "anger", "fear", "surprise", "love", "disgust", "neutral"];
+const EMOTIONS = [
+  "admiration", "amusement", "anger", "annoyance", "approval", "caring", "confusion",
+  "curiosity", "desire", "disappointment", "disapproval", "disgust", "embarrassment",
+  "excitement", "fear", "gratitude", "grief", "joy", "love", "nervousness", "optimism",
+  "pride", "realization", "relief", "remorse", "sadness", "surprise", "neutral"
+];
 
 function getRandomEmotion() {
   return EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];

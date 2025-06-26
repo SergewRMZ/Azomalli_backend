@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CustomError, PaginationDto } from '../../domain';
 import { ActivityService } from '../services/activity.service';
 import { CreateActivityDTO } from '../../domain';
+import { error } from 'console';
 
 export class ActivityController {
   constructor(public readonly activityService: ActivityService) {}
@@ -24,7 +25,7 @@ export class ActivityController {
   }
 
   public getActivities = (req: Request, res: Response) => {
-    const { page = 1, pageSize = 10 } = req.query;
+    const { page = 1, pageSize = 5 } = req.query;
     const [error, paginationDto] = PaginationDto.create(+page, +pageSize);
 
     if( error ) res.status(400).json({error});
@@ -32,5 +33,12 @@ export class ActivityController {
     this.activityService.getActivities(paginationDto!)
       .then( activites => res.json(activites))
       .catch( error => this.handleError(error, res));
+  }
+
+  public getActivitiesByEmotion = (req: Request, res: Response) => {
+    const userId = req.body.user.id;
+    this.activityService.getActivitiesByDominantEmotion(userId)
+      .then(activities => res.json(activities))
+      .catch(error => this.handleError(error, res));
   }
 }

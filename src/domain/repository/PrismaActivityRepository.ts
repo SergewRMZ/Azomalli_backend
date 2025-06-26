@@ -45,4 +45,19 @@ export class PrismaActivityRepository implements ActivityRepository {
     const count = await this.prisma.activity.count();
     return count;
   }
+
+  async findByEmotion(emotion: string): Promise<Activity[]> {
+    return await this.prisma.activity.findMany({
+      where: {
+        emotions: {
+          has: emotion
+        }
+      },
+      take: 3,
+      orderBy: {
+        id: 'asc'
+      }
+    });
+  }
+
 }

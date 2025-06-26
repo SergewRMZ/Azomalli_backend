@@ -16,7 +16,6 @@ export class EmotionService {
       });
 
       const emociones = response.data.emociones;
-      console.log(emociones);
       if(!Array.isArray(emociones) || emociones.length === 0) {
         throw CustomError.internalServer(`Ocurrió un error al analizar el texto.`);
       }

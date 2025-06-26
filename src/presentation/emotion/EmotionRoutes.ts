@@ -11,7 +11,7 @@ export class EmotionRoutes {
     
     const emotionService = new EmotionService(prismaEmotionRepository);
     const emotionController = new EmotionController(emotionService);
-    router.post('/analyzer', emotionController.analyzerEmotion);
+    router.post('/analyzer', [AuthMiddleware.validateJWT], emotionController.analyzerEmotion);
     router.get('/getLastStatistics', [AuthMiddleware.validateJWT], emotionController.getLastStatistics);
     return router;
   }

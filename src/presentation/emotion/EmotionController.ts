@@ -14,7 +14,8 @@ export class EmotionController {
   } 
 
   public analyzerEmotion = (req: Request, res: Response) => {
-    const [error, userInputDto] = UserInputDto.create(req.body);
+    const userId = req.body.user.id;
+    const [error, userInputDto] = UserInputDto.create({...req.body, user_id: userId});
     if (error) return res.status(400).json({ error });
     
     this.emotionService.registerEmotion(userInputDto!)
