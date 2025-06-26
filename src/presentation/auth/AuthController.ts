@@ -66,4 +66,14 @@ export class AuthController {
       .then(survey => res.json(survey))
       .catch(error => this.handleError(error, res));
   }
+
+  public updateStatus = (req: Request, res: Response) => {
+    const userId = req.body.user.id;
+    const surveyCompleted = req.body.surveyCompleted;
+    const termsAccepted = req.body.termsAccepted;
+
+    this.userService.updateStatus(userId, surveyCompleted, termsAccepted)
+      .then(response => res.json(response))
+      .catch(error => this.handleError(error, res));
+  }
 }

@@ -94,7 +94,6 @@ export class UserService {
       const existUser = await this.prismaUserRepository.findByEmail(userLoginDto.email);
       if(!existUser) throw CustomError.badRequest('The email does not exist');
       const isMatch = bcrypAdapter.compare(userLoginDto.password, existUser.password);
-
       if(!isMatch) throw CustomError.badRequest('Incorrect Password');
       const { password, ...user } = UserEntity.fromObject(existUser); 
 
@@ -173,8 +172,27 @@ export class UserService {
     
     try {
       fs.writeFileSync(filePath, JSON.stringify(encryptedSurvey, null, 2));
-      // const survey = await this.prismaSurveyRepository.create(userId, surveyReference);
-      return encryptedSurvey;
+      const survey = await this.prismaSurveyRepository.create(userId, surveyReference);
+      return {
+        status: 'success',
+        message: 'Se han almacenado los datos de forma segura'
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public updateStatus = async (userId: string, surveyCompleted: boolean, termsAccepted: boolean) => {
+    const user = await this.prismaUserRepository.findById(userId);
+    if(!user) throw CustomError.badRequest('El usuario no existe en la base de datos');
+    try {
+      const userUpdated = await this.prismaUserRepository.updateSurveyAndTerms(userId, surveyCompleted, termsAccepted);
+      if(userUpdated) {
+        return {
+          status: 'success',
+          message: 'Terminos y condiciones aceptados'
+        }
+      }
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
     }

@@ -26,6 +26,7 @@ export class AuthRoutes {
     const authController = new AuthController(accountService);
     router.post('/register', authController.registerUser);
     router.post('/register-survey', [AuthMiddleware.validateJWT], authController.createSurvey);
+    router.post('/update-status', [AuthMiddleware.validateJWT], authController.updateStatus);
     router.post('/register-admin', authController.registerAdmin);
     router.post('/login', authController.loginUser);
     router.post('/login-admin', authController.loginAdmin);

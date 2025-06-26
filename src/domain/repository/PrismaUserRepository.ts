@@ -6,6 +6,22 @@ import { UserRegisterDto } from '../dtos/auth/UserRegisterDto';
 export class PrismaUserRepository implements UserRepository {
   private prisma = new PrismaClient();
 
+  async updateSurveyAndTerms (userId: string, surveyCompleted: boolean, termsAccepted: boolean) {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          surveyCompleted,
+          termAccepted: termsAccepted
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error("No se pudo actualizar los datos");
+    }
+  }
+
   async findByEmail(email: string):Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },

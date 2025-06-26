@@ -14,7 +14,7 @@ export class PrismaSurveyRepository {
       
       return newSurvey;
     } catch (error) {
-      throw new Error("Error al guardar la encuesta");
+      throw new Error("Ya se realizó la encuesta");
     }
   }
 }

@@ -35,7 +35,8 @@ model User {
   perfil_image    String?
   username        String
   role            role              @default(user)
-
+  surveyCompleted Boolean   @default(false)
+  termAccepted    Boolean   @default(false)
   challenges      Challenge[]
   emotionRecords  EmotionRecord[]
   progressTracker ProgressTracker[]
