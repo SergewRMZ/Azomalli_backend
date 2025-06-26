@@ -18,8 +18,8 @@ function randomDateBetween(start: Date, end: Date): Date {
 }
 
 async function main() {
-  const userId = "ddf1ce3a-c3b8-4b53-a3a7-9797de173a27"; 
-
+  const userId = "d9c40818-6088-4e55-86ab-dd99963e2a60"; 
+  const adminId = "c43a6e74-4ee3-4788-977d-ee03a00d5d61";
   const today = new Date();
   const start = new Date();
   start.setDate(today.getDate() - 7); // últimos 10 días
@@ -33,6 +33,32 @@ async function main() {
       },
     });
   }
+
+  const dailyTips = [
+    "Haz una pausa y respira profundo 3 veces.",
+    "Escucha tu canción favorita para levantar el ánimo.",
+    "Escribe 3 cosas que agradeces hoy.",
+    "Tómate 5 minutos para estirarte y moverte.",
+    "Habla con alguien en quien confíes.",
+    "Dibuja algo aunque no sepas dibujar.",
+    "Ve un video que te haga reír.",
+    "Lee una frase motivadora.",
+    "Organiza tu espacio de trabajo o estudio.",
+    "Escribe una carta que nunca enviarás para liberar emociones."
+  ];
+
+  for (let i = 0; i < 10; i++) {
+    await prisma.dailyTip.create({
+      data: {
+        emotion: getRandomEmotion(),
+        tip: dailyTips[i],
+        image_dailyTip: `tip-image-${i + 1}.jpg`, // Puedes corregir el path después
+        active: true,
+        admin_id: adminId
+      }
+    });
+  }
+
 
   console.log("🧠 Seed completada con 50 emociones aleatorias");
 }

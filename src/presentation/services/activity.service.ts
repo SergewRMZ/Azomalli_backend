@@ -65,7 +65,6 @@ export class ActivityService {
         activities: []
       };
     }
-
     return {
       status: 'success',
       message: `Actividades recomendadas para tu emoción más frecuente esta semana (${dominantEmotion})`,

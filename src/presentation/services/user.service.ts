@@ -82,7 +82,8 @@ export class UserService {
 
       return {
         account: admin,
-        token
+        token,
+        
       };
     } catch (error) {
       
@@ -99,10 +100,11 @@ export class UserService {
 
       const token = await JwtAdapter.generateToken({ user_id: existUser.id, email: existUser.email });
       if(!token) throw CustomError.internalServer('Error while creating JWT');
-
+      
       return {
         account: user,
-        token: token
+        token: token,
+        
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
